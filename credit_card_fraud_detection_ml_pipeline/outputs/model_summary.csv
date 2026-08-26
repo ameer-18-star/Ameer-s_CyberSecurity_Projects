@@ -1,0 +1,8 @@
+Model,Type,Accuracy,F1-Score,ROC-AUC,AUPRC
+Isolation Forest,Unsupervised,0.999,0.9412,1.0,1.0
+Local Outlier Factor,Unsupervised,0.999,0.9412,1.0,1.0
+One-Class SVM,Unsupervised,0.949,0.2388,1.0,1.0
+Logistic Regression,Supervised,1.0,1.0,1.0,1.0
+Random Forest,Supervised,0.999,0.8889,1.0,1.0
+Gradient Boosting,Supervised,0.9985,0.8235,0.9999,0.9909
+XGBoost,Supervised,0.9995,0.9474,1.0,1.0

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KeyLogger Demo — Cybersecurity Awareness</title>
+<style>
+  /* ── Reset & base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg:        #0b0f1a;
+    --surface:   #111827;
+    --surface2:  #1a2236;
+    --border:    #1e2d45;
+    --accent:    #00d4ff;
+    --accent2:   #ff4d6d;
+    --warn:      #fbbf24;
+    --green:     #22c55e;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --mono:      'Courier New', Courier, monospace;
+  }
+
+  html, body { height: 100%; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  header .logo {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -.5px;
+    color: var(--accent);
+  }
+  header .logo span { color: var(--accent2); }
+  .badge {
+    background: #ff4d6d22;
+    border: 1px solid var(--accent2);
+    color: var(--accent2);
+    font-size: .7rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .badge.green {
+    background: #22c55e18;
+    border-color: var(--green);
+    color: var(--green);
+  }
+  header .meta {
+    margin-left: auto;
+    font-size: .78rem;
+    color: var(--muted);
+    text-align: right;
+    line-height: 1.6;
+  }
+
+  /* ── Main layout ── */
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: auto 1fr;
+    gap: 16px;
+    padding: 20px 28px;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  /* ── Stats row ── */
+  .stats {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+  }
+  .stat-card.red::before  { background: var(--accent2); }
+  .stat-card.warn::before { background: var(--warn); }
+  .stat-card.green::before{ background: var(--green); }
+  .stat-label { font-size: .72rem; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; }
+  .stat-value { font-size: 2rem; font-weight: 700; line-height: 1.1; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  .stat-card.red   .stat-value { color: var(--accent2); }
+  .stat-card.warn  .stat-value { color: var(--warn); }
+  .stat-card.green .stat-value { color: var(--green); }
+
+  /* ── Keystroke feed ── */
+  .feed-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 12px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .6px;
+  }
+  .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 6px var(--accent2);
+    animation: pulse 1.2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; }
+    50%      { opacity: .35; }
+  }
+
+  #feed {
+    flex: 1;
+    overflow-y: auto;
+    font-family: var(--mono);
+    font-size: .8rem;
+    padding: 10px 0;
+    max-height: 52vh;
+  }
+  #feed::-webkit-scrollbar { width: 4px; }
+  #feed::-webkit-scrollbar-track { background: transparent; }
+  #feed::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .feed-row {
+    display: grid;
+    grid-template-columns: 90px 80px 1fr;
+    gap: 8px;
+    padding: 4px 18px;
+    border-bottom: 1px solid #ffffff06;
+    align-items: center;
+    animation: fadeIn .18s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-4px); } }
+  .feed-row:hover { background: var(--surface2); }
+  .feed-time  { color: var(--muted); }
+  .feed-type  { font-size: .7rem; }
+  .feed-type.press   { color: var(--accent); }
+  .feed-type.release { color: var(--muted); }
+  .feed-key   { color: var(--text); }
+  .feed-key.special { color: var(--warn); }
+
+  /* ── Live visualizer (last keys) ── */
+  #live-strip {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    padding: 12px 18px;
+    border-top: 1px solid var(--border);
+    min-height: 52px;
+  }
+  .key-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    padding: 2px 8px;
+    font-family: var(--mono);
+    font-size: .8rem;
+    color: var(--accent);
+    animation: popIn .12s ease;
+  }
+  @keyframes popIn { from { transform: scale(.7); opacity: 0; } }
+  .key-chip.special { color: var(--warn); border-color: #fbbf2455; }
+
+  /* ── Right panel: info + security ── */
+  .info-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .card-title {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: .78rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .7px;
+    color: var(--muted);
+  }
+  .card-body { padding: 14px 16px; }
+
+  /* How it works */
+  .steps { list-style: none; counter-reset: step; }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: .82rem;
+    line-height: 1.5;
+    color: #94a3b8;
+  }
+  .steps li::before {
+    content: counter(step);
+    flex-shrink: 0;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent2);
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Security tips */
+  .tip {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: .82rem;
+    line-height: 1.55;
+    color: #94a3b8;
+  }
+  .tip-icon { font-size: 1rem; flex-shrink: 0; margin-top: 1px; }
+  .tip strong { color: var(--green); display: block; font-size: .8rem; }
+
+  /* Log file info */
+  .log-path {
+    font-family: var(--mono);
+    font-size: .72rem;
+    color: var(--accent);
+    background: var(--bg);
+    padding: 8px 10px;
+    border-radius: 6px;
+    word-break: break-all;
+    margin-top: 6px;
+    border: 1px solid var(--border);
+  }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 12px;
+    font-size: .72rem;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 900px) {
+    main { grid-template-columns: 1fr; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Key<span>Logger</span> Demo</div>
+  <span class="badge">Educational Only</span>
+  <span class="badge green">● Live</span>
+  <div class="meta">
+    Session start: <strong>{{ session_start }}</strong><br>
+    Platform: {{ platform }}
+  </div>
+</header>
+
+<main>
+
+  <!-- Stats Row -->
+  <section class="stats" aria-label="Statistics">
+    <div class="stat-card">
+      <div class="stat-label">Total Keystrokes</div>
+      <div class="stat-value" id="s-total">0</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Key Presses</div>
+      <div class="stat-value" id="s-press">0</div>
+    </div>
+    <div class="stat-card warn">
+      <div class="stat-label">Special Keys</div>
+      <div class="stat-value" id="s-special">0</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Char Keys</div>
+      <div class="stat-value" id="s-char">0</div>
+    </div>
+  </section>
+
+  <!-- Feed Panel -->
+  <section class="feed-panel" aria-label="Keystroke feed">
+    <div class="panel-header">
+      <span class="dot"></span>
+      Live Keystroke Feed
+    </div>
+    <div id="feed" role="log" aria-live="polite" aria-label="Keystrokes"></div>
+    <div id="live-strip" aria-label="Recent keys"></div>
+  </section>
+
+  <!-- Right Info Panel -->
+  <aside class="info-panel">
+
+    <div class="card">
+      <div class="card-title">📁 Log Files Saved To</div>
+      <div class="card-body">
+        <p style="font-size:.8rem;color:#94a3b8">All keystrokes are written to your Desktop:</p>
+        <div class="log-path">{{ log_file }}</div>
+        <div class="log-path" style="margin-top:6px">{{ log_file.replace('.txt', '.json') }}</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">⚙️ How This Keylogger Works</div>
+      <div class="card-body">
+        <ol class="steps">
+          <li>The Python script uses <strong>pynput</strong> to hook into the OS keyboard event stream at the driver level.</li>
+          <li>Every key-press and key-release fires a callback that timestamps and records the key name.</li>
+          <li>Events are appended to a plain-text and a JSON file on your Desktop in real time.</li>
+          <li>A Flask web server reads those events from memory and serves them to this browser dashboard via a REST API.</li>
+          <li>The browser polls <code>/api/events</code> every second and updates the UI — no page reload needed.</li>
+        </ol>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🛡️ How To Protect Yourself</div>
+      <div class="card-body">
+        <div class="tip">
+          <span class="tip-icon">🔍</span>
+          <div><strong>Use Anti-Malware / EDR</strong>Endpoint Detection tools flag unauthorized keyboard hooks. Tools like Malwarebytes or Windows Defender catch most keyloggers.</div>
+        </div>
+        <div class="tip">
+          <span class="tip-icon">🔑</span>
+          <div><strong>Use a Password Manager</strong>Auto-fill bypasses keylogging because keys are never typed. Use Bitwarden, 1Password, or similar.</div>
+        </div>
+        <div class="tip">
+          <span class="tip-icon">🖥️</span>
+          <div><strong>Use Virtual Keyboards for Sensitive Input</strong>On-screen keyboards use mouse clicks, not keyboard events — invisible to pynput-style loggers.</div>
+        </div>
+        <div class="tip">
+          <span class="tip-icon">🔐</span>
+          <div><strong>Enable 2FA / MFA</strong>Even if a password is captured, MFA prevents account takeover without the second factor.</div>
+        </div>
+        <div class="tip">
+          <span class="tip-icon">📦</span>
+          <div><strong>Keep OS &amp; Apps Updated</strong>Keyloggers often exploit outdated drivers. Patches close these gaps quickly.</div>
+        </div>
+        <div class="tip">
+          <span class="tip-icon">🚫</span>
+          <div><strong>Don't Run Unknown Executables</strong>Most keyloggers arrive as email attachments or pirated software. Only run trusted, signed software.</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+</main>
+
+<footer>
+  Educational Keylogger Demo &nbsp;·&nbsp; For authorized, personal &amp; academic use only &nbsp;·&nbsp; Press <kbd>Ctrl+C</kbd> in the terminal to stop recording
+</footer>
+
+<script>
+  let knownCount = 0;
+
+  async function fetchStats() {
+    try {
+      const r = await fetch('/api/stats');
+      const d = await r.json();
+      document.getElementById('s-total').textContent   = d.total_presses + d.total_releases;
+      document.getElementById('s-press').textContent   = d.total_presses;
+      document.getElementById('s-special').textContent = d.special_keys;
+      document.getElementById('s-char').textContent    = d.char_keys;
+
+      // Live strip (last 10 pressed keys)
+      const strip = document.getElementById('live-strip');
+      strip.innerHTML = '';
+      d.last_10.forEach(k => {
+        const chip = document.createElement('span');
+        chip.className = 'key-chip' + (k.startsWith('[') ? ' special' : '');
+        chip.textContent = k;
+        strip.appendChild(chip);
+      });
+    } catch(e) {}
+  }
+
+  async function fetchEvents() {
+    try {
+      const r = await fetch('/api/events');
+      const d = await r.json();
+      if (d.total === knownCount) return;   // nothing new
+      knownCount = d.total;
+
+      const feed = document.getElementById('feed');
+
+      // Add only new rows (events are newest-first, so slice the ones we don't have)
+      const allEvents = d.events;              // newest first
+      const newOnes   = allEvents.slice(0, d.total - (knownCount - (d.total - knownCount)));
+      // Simpler: rebuild visible rows (capped at 200)
+      feed.innerHTML = '';
+      allEvents.slice(0, 200).forEach(ev => {
+        const row = document.createElement('div');
+        const isSpecial = ev.key.startsWith('[');
+        const typeClass = ev.type === 'PRESS' ? 'press' : 'release';
+        row.className = 'feed-row';
+        row.innerHTML =
+          `<span class="feed-time">${ev.time}</span>` +
+          `<span class="feed-type ${typeClass}">${ev.type}</span>` +
+          `<span class="feed-key ${isSpecial ? 'special' : ''}">${escapeHtml(ev.key)}</span>`;
+        feed.appendChild(row);
+      });
+    } catch(e) {}
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // Poll every second
+  fetchStats();
+  fetchEvents();
+  setInterval(fetchStats,  1000);
+  setInterval(fetchEvents, 1000);
+</script>
+</body>
+</html>

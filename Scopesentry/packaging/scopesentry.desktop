@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=ScopeSentry
+Comment=WiFi defensive monitoring and engagement-authorization toolkit
+Exec=python3 /opt/scopesentry/app.py
+Icon=/opt/scopesentry/resources/scopesentry.svg
+Terminal=false
+Type=Application
+Categories=Security;Network;
+StartupNotify=true

@@ -1,0 +1,12 @@
+{
+  "engagement_id": "ACME-2026-06",
+  "client": "Acme Corp",
+  "authorized_by": "Jane Doe, CISO",
+  "tester": "Your Name",
+  "window_start": "2026-06-24T09:00:00",
+  "window_end": "2026-06-26T18:00:00",
+  "authorized_targets": [
+    {"bssid": "AA:BB:CC:11:22:33", "essid": "Acme-Corp-WiFi"},
+    {"bssid": "AA:BB:CC:44:55:66", "essid": "Acme-Guest"}
+  ]
+}

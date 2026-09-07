@@ -1,0 +1,9 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Shield -->
+  <path d="M64 8 L112 24 L112 64 C112 96 92 116 64 124 C36 116 16 96 16 64 L16 24 Z"
+        fill="#2a2b32" stroke="#4caf50" stroke-width="4"/>
+  <!-- WiFi arcs, centered lower in the shield -->
+  <path d="M40 70 A 34 34 0 0 1 88 70" fill="none" stroke="#64b5f6" stroke-width="6" stroke-linecap="round"/>
+  <path d="M50 80 A 20 20 0 0 1 78 80" fill="none" stroke="#64b5f6" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="64" cy="92" r="6" fill="#4caf50"/>
+</svg>

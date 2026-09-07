@@ -1,0 +1,25 @@
+#!/bin/sh
+# Post-install dependencies for ScopeSentry.
+#
+# This installs only what the passive/defensive modules need:
+#   - aircrack-ng: provides airmon-ng (monitor-mode toggle) and airodump-ng
+#                  (passive scanning) — used with no --bssid/-c attack lock
+#                  and never paired with aireplay-ng/reaver/etc. here.
+#   - wireless-tools / iw: interface enumeration.
+#   - wireshark-common: provides tshark, used read-only by the deauth monitor.
+#
+# No attack/cracking tools (reaver, bully, hcxdumptool, hashcat) are
+# installed, because this project has no attack engine that would use them.
+set -e
+
+apt-get update
+apt-get install -y \
+    aircrack-ng \
+    wireless-tools \
+    iw \
+    wireshark-common
+
+echo "ScopeSentry dependencies installed."
+echo "Note: capturing 802.11 frames (used by the passive scan and the"
+echo "deauth-flood monitor) requires either running as root or granting"
+echo "the appropriate capabilities to tshark/airodump-ng for your distro."

@@ -1,0 +1,96 @@
+/* Minimal dark theme for ScopeSentry. Apply with:
+   app.setStyleSheet(open("resources/style.qss").read())
+*/
+
+QWidget {
+    background-color: #1e1f24;
+    color: #e6e6e6;
+    font-family: "Segoe UI", "Noto Sans", sans-serif;
+    font-size: 13px;
+}
+
+QMainWindow {
+    background-color: #1e1f24;
+}
+
+QTabWidget::pane {
+    border: 1px solid #33343c;
+    top: -1px;
+}
+
+QTabBar::tab {
+    background: #2a2b32;
+    padding: 8px 16px;
+    border: 1px solid #33343c;
+    border-bottom: none;
+}
+
+QTabBar::tab:selected {
+    background: #3a3b44;
+    color: #ffffff;
+}
+
+QTabBar::tab:hover {
+    background: #34353e;
+}
+
+QGroupBox {
+    border: 1px solid #33343c;
+    border-radius: 6px;
+    margin-top: 10px;
+    padding-top: 10px;
+    font-weight: bold;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    left: 10px;
+    padding: 0 4px;
+}
+
+QPushButton {
+    background-color: #3a3b44;
+    border: 1px solid #4a4b55;
+    padding: 6px 12px;
+    border-radius: 4px;
+}
+
+QPushButton:hover {
+    background-color: #4a4b55;
+}
+
+QPushButton:disabled {
+    color: #777;
+    background-color: #2a2b32;
+}
+
+QPushButton:pressed {
+    background-color: #2a2b32;
+}
+
+QLineEdit, QComboBox, QSpinBox, QDoubleSpinBox {
+    background-color: #15161a;
+    border: 1px solid #33343c;
+    border-radius: 4px;
+    padding: 4px;
+}
+
+QTableWidget, QListWidget, QPlainTextEdit {
+    background-color: #15161a;
+    border: 1px solid #33343c;
+    gridline-color: #33343c;
+}
+
+QHeaderView::section {
+    background-color: #2a2b32;
+    border: 1px solid #33343c;
+    padding: 4px;
+}
+
+QTableWidget::item:selected, QListWidget::item:selected {
+    background-color: #3a3b44;
+}
+
+/* Severity color hints — applied via item.setForeground() in code, these
+   classes document the intended palette rather than enforcing it. */
+/* critical: #e57373   warning: #ffb74d   info: #64b5f6   ok: #4caf50 */

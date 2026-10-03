@@ -105,7 +105,7 @@ automatically generates synthetic demo data.
 ### 1. Clone / download the project
 
 ```bash
-git clone https://github.com/your-username/credit-card-fraud-detection
+git clone https://github.com/ameer-18-star/credit-card-fraud-detection
 cd credit-card-fraud-detection
 ```
 

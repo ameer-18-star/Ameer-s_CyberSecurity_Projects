@@ -1,6 +1,5 @@
 # `README.md` Source Code
 
-```markdown
 # 🛡️ Ameer's Cybersecurity Projects & Hands-On Labs
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)

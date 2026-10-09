@@ -38,13 +38,13 @@ This repository acts as a centralized knowledge base and code directory covering
 
 
 
-
+```
 ├── 01-Network-Security-&-VPNs/       # Tunneling, Encrypted Access, & Firewall Rules
 ├── 02-Packet-Analysis-&-Wireshark/   # PCAP Files, Traffic Analysis, & Inspection
 ├── 03-Cloud-&-Infrastructure/        # Oracle Cloud, Ubuntu VMs, & Hardening Guides
 ├── 04-SIEM-&-Threat-Intelligence/    # ELK Stack, Log Parsing, & Alert Rules
 └── 05-Security-Automation-Python/    # Custom Automation & Analytical Tooling
-
+```
 
 
 ---
